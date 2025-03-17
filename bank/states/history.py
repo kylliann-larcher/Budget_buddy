@@ -1,1 +1,1 @@
-# Interface histoy of transactions (date, category, type, amount)
+# Interface histoy of transactions (reference, description, date, category, type, amount)
