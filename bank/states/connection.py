@@ -11,7 +11,6 @@ class Connection:
     def __init__(self):
         pass
 
-
     # To verify entries
     def validate_input(self, email, password, name=None, first_name=None):
         # To verify if all fields are completed

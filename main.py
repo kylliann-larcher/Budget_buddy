@@ -3,6 +3,7 @@
 from bank.states.connection import *
 from bank.states.interface import *
 
+
 def main():
     connect_interface = Connection()
     connect_interface.init_connection_screen()

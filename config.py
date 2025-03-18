@@ -1,6 +1,7 @@
 # Generals configurations
 
 WINDOW_SIZE = '1100x600'
+HISTORY_WINDOW_SIZE = '800x500'
 MINI_WINDOW_SIZE = '280x110'
 
 BACKGROUND = 'navajowhite'

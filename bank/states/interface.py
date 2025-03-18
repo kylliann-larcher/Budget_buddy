@@ -5,6 +5,7 @@ import tkinter as tk
 import tkinter.font
 from tkinter import ttk
 from bank.entities.operations import *
+from bank.states.history  import HistoryWindow
 
 class Interface:
     def __init__(self):
@@ -49,13 +50,16 @@ class Interface:
 
         # Button Zone
         deposit_button = tk.Button(bottom_frame, text='Deposit', width=25, command=lambda: DepositWindow(screen))
-        deposit_button.pack(padx=60, side=tk.LEFT)
+        deposit_button.pack(padx=30, side=tk.LEFT)
 
         debit_button = tk.Button(bottom_frame, text='Debit', width=25, command=lambda: DebitWindow(screen))
-        debit_button.pack(padx=60, side=tk.LEFT)
+        debit_button.pack(padx=30, side=tk.LEFT)
 
         transfer_button = tk.Button(bottom_frame, text='Transfer', width=25, command=lambda: TransferWindow(screen))
-        transfer_button.pack(padx=60, side=tk.LEFT)
+        transfer_button.pack(padx=30, side=tk.LEFT)
+
+        history_button = tk.Button(bottom_frame, text='History', width=25, command=lambda: HistoryWindow(screen))
+        history_button.pack(padx=30, side=tk.LEFT)
 
 
 
