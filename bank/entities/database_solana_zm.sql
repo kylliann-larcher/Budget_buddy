@@ -6,68 +6,67 @@ utilisateurs
   └── budgets
 
 
-
--- Création de la base de données
+-- Database creation
 CREATE DATABASE IF NOT EXISTS database_solana;
 USE database_solana;
 
--- Table des utilisateurs
-CREATE TABLE IF NOT EXISTS utilisateurs (
+-- Users table
+CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    nom VARCHAR(100) NOT NULL,
-    prenom VARCHAR(100) NOT NULL,
+    last_name VARCHAR(100) NOT NULL,
+    first_name VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
-    mot_de_passe VARCHAR(255) NOT NULL, -- Pour stocker le hash du mot de passe
-    date_inscription DATETIME DEFAULT CURRENT_TIMESTAMP,
-    derniere_connexion DATETIME DEFAULT NULL,
+    password_hash VARCHAR(255) NOT NULL, -- To store the hashed password
+    registration_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    last_login DATETIME DEFAULT NULL,
     CONSTRAINT check_email_format CHECK (email REGEXP '^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,4}$')
 );
 
--- Table des comptes, relation 1:N avec utilisateurs (un utilisateur peut avoir plusieurs comptes)
-CREATE TABLE IF NOT EXISTS comptes (
+-- Accounts table, 1:N relationship with users (one user can have multiple accounts)
+CREATE TABLE IF NOT EXISTS accounts (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    utilisateur_id INT NOT NULL,
-    libelle VARCHAR(100) NOT NULL,
-    solde DECIMAL(15, 2) DEFAULT 0.00,
-    date_creation DATETIME DEFAULT CURRENT_TIMESTAMP,
-    est_actif BOOLEAN DEFAULT TRUE,
-    FOREIGN KEY (utilisateur_id) REFERENCES utilisateurs(id) ON DELETE CASCADE
+    user_id INT NOT NULL,
+    label VARCHAR(100) NOT NULL,
+    balance DECIMAL(15, 2) DEFAULT 0.00,
+    creation_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    is_active BOOLEAN DEFAULT TRUE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
--- Table des transactions
+-- Transactions table
 CREATE TABLE IF NOT EXISTS transactions (
     id INT AUTO_INCREMENT PRIMARY KEY,
     reference VARCHAR(50) NOT NULL UNIQUE,
-    compte_id INT NOT NULL,
-    categorie_id INT,
-    type ENUM('retrait', 'depot', 'transfert') NOT NULL,
-    montant DECIMAL(15, 2) NOT NULL,
-    date_transaction DATETIME NOT NULL,
+    account_id INT NOT NULL,
+    category_id INT,
+    type ENUM('withdrawal', 'deposit', 'transfer') NOT NULL,
+    amount DECIMAL(15, 2) NOT NULL,
+    transaction_date DATETIME NOT NULL,
     description TEXT,
-    compte_destination_id INT DEFAULT NULL, -- Pour les transferts
-    FOREIGN KEY (compte_id) REFERENCES comptes(id) ON DELETE CASCADE,
-    FOREIGN KEY (compte_destination_id) REFERENCES comptes(id) ON DELETE SET NULL
+    destination_account_id INT DEFAULT NULL, -- For transfers
+    FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE CASCADE,
+    FOREIGN KEY (destination_account_id) REFERENCES accounts(id) ON DELETE SET NULL
 );
 
--- Table des sessions utilisateur
+-- User sessions table
 CREATE TABLE IF NOT EXISTS sessions (
     id VARCHAR(255) PRIMARY KEY,
-    utilisateur_id INT NOT NULL,
+    user_id INT NOT NULL,
     ip_address VARCHAR(45) NOT NULL,
     user_agent TEXT,
-    date_creation DATETIME DEFAULT CURRENT_TIMESTAMP,
-    date_expiration DATETIME NOT NULL,
-    FOREIGN KEY (utilisateur_id) REFERENCES utilisateurs(id) ON DELETE CASCADE
+    creation_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+    expiration_date DATETIME NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
 
--- Table des budgets par catégorie
+-- Budget table by category
 CREATE TABLE IF NOT EXISTS budgets (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    utilisateur_id INT NOT NULL,
-    categorie_id INT NOT NULL,
-    montant DECIMAL(15, 2) NOT NULL,
-    periode ENUM('mensuel', 'trimestriel', 'annuel') DEFAULT 'mensuel',
-    date_debut DATE NOT NULL,
-    date_fin DATE,
-    FOREIGN KEY (utilisateur_id) REFERENCES utilisateurs(id) ON DELETE CASCADE
+    user_id INT NOT NULL,
+    category_id INT NOT NULL,
+    amount DECIMAL(15, 2) NOT NULL,
+    period ENUM('monthly', 'quarterly', 'annually') DEFAULT 'monthly',
+    start_date DATE NOT NULL,
+    end_date DATE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 );
