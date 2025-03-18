@@ -5,7 +5,7 @@ import tkinter as tk
 import tkinter.font
 from tkinter import ttk
 from bank.entities.operations import *
-from bank.states.history  import HistoryWindow
+from bank.entities.history  import HistoryWindow
 
 class Interface:
     def __init__(self):
