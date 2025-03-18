@@ -39,22 +39,22 @@ class Connection:
             return True
 
 
-    def init_screen(self):
+    def init_connection_screen(self):
         screen = tk.Tk()
         screen.title("Solana Bank | Connection")
         screen.geometry(WINDOW_SIZE)
         screen.configure(bg=BACKGROUND)
 
         # Initiate fonts
-        FONT = tkinter.font.Font(family=family_font, size=size_font, weight=weight_font)
         TITLE_FONT = tkinter.font.Font(family=family_font, size=title_size_font, weight=weight_font)
         SECOND_TITLE_FONT = tkinter.font.Font(family=family_font, size=second_title_size_font, weight=weight_font)
+        FONT = tkinter.font.Font(family=family_font, size=size_font, weight=weight_font)
 
         # Title
         title_label = tk.Label(screen, text="SOLANA", font=TITLE_FONT, bg=BACKGROUND)
         title_label.pack(pady=15)
         scn_title_label = tk.Label(screen, text="BANK", font=TITLE_FONT, bg=BACKGROUND)
-        scn_title_label.pack(pady=15)
+        scn_title_label.pack()
 
         # Initiate frames
         main_frame = tk.Frame(screen)

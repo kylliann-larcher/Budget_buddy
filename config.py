@@ -1,9 +1,10 @@
 # Generals configurations
 
 WINDOW_SIZE = '1100x600'
+MINI_WINDOW_SIZE = '280x110'
 
-BACKGROUND = 'white'
-BACKGROUND_BIS = 'light grey'
+BACKGROUND = 'navajowhite'
+BACKGROUND_BIS = 'white'
 
 # Fonts
 family_font = 'Arial'
