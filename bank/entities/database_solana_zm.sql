@@ -1,6 +1,15 @@
+
+utilisateurs
+  ├── comptes
+  │     └── transactions
+  ├── sessions
+  └── budgets
+
+
+
 -- Création de la base de données
 CREATE DATABASE IF NOT EXISTS database_solana;
-USE gestion_financiere;
+USE database_solana;
 
 -- Table des utilisateurs
 CREATE TABLE IF NOT EXISTS utilisateurs (
