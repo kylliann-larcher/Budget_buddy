@@ -11,17 +11,21 @@ class Connection:
     def __init__(self):
         pass
 
-    def validate_input(self, email, password, name=None, first_name=None):
 
+    # To verify entries
+    def validate_input(self, email, password, name=None, first_name=None):
+        # To verify if all fields are completed
         if name is not None and first_name is not None:
             if not all([name, first_name, email, password]):
                 self.show_error("All fields must be completed.")
                 return False
-
+            
+        # To verify valid adress mail
         elif "@" not in email or "." not in email.split("@")[-1]:
             self.show_error("Email address invalid.")
             return False
 
+        # To verify vali password
         elif len(password) < 5 or \
            not re.search(r"[A-Za-z]", password) or \
            not re.search(r"\d", password) or \
@@ -29,9 +33,11 @@ class Connection:
             self.show_error("Password must contain at least 5 characters, one letter, one number and one special character.")
             return False
 
+        # Validation OK
         else:
             self.show_message("Successful !")
             return True
+
 
     def init_screen(self):
         screen = tk.Tk()
@@ -121,6 +127,7 @@ class Connection:
         login_button.pack(fill='x', pady=20)
 
         screen.mainloop()
+
 
     def show_error(self, message):
         messagebox.showerror("Invalid Connection", message)
