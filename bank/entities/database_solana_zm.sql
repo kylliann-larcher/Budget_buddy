@@ -1,72 +1,143 @@
 
-utilisateurs
-  ├── comptes
-  │     └── transactions
-  ├── sessions
-  └── budgets
+
+utilisateurs (users)
+  ├── comptes (accounts)
+  │     └── transactions (transactions)
+  │           ├── types_transaction (transaction_types)
+  │           └── catégories (categories)
+  └── alertes (alerts)
 
 
--- Database creation
-CREATE DATABASE IF NOT EXISTS database_solana;
-USE database_solana;
+-- Création de la base de données
+CREATE DATABASE IF NOT EXISTS database_solana_zm;
+USE database_solana_zm;
 
--- Users table
-CREATE TABLE IF NOT EXISTS users (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    last_name VARCHAR(100) NOT NULL,
-    first_name VARCHAR(100) NOT NULL,
+-- Table des utilisateurs
+CREATE TABLE users (
+    user_id INT AUTO_INCREMENT PRIMARY KEY,
+    lastname VARCHAR(50) NOT NULL,
+    firstname VARCHAR(50) NOT NULL,
     email VARCHAR(100) NOT NULL UNIQUE,
-    password_hash VARCHAR(255) NOT NULL, -- To store the hashed password
-    registration_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-    last_login DATETIME DEFAULT NULL,
-    CONSTRAINT check_email_format CHECK (email REGEXP '^[A-Za-z0-9._%-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,4}$')
+    password_hash VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
--- Accounts table, 1:N relationship with users (one user can have multiple accounts)
-CREATE TABLE IF NOT EXISTS accounts (
-    id INT AUTO_INCREMENT PRIMARY KEY,
+-- Table des comptes bancaires
+CREATE TABLE accounts (
+    account_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
-    label VARCHAR(100) NOT NULL,
-    balance DECIMAL(15, 2) DEFAULT 0.00,
-    creation_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-    is_active BOOLEAN DEFAULT TRUE,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    account_name VARCHAR(50) NOT NULL,
+    balance DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 
--- Transactions table
-CREATE TABLE IF NOT EXISTS transactions (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    reference VARCHAR(50) NOT NULL UNIQUE,
-    account_id INT NOT NULL,
+-- Table des catégories de transaction
+CREATE TABLE categories (
+    category_id INT AUTO_INCREMENT PRIMARY KEY,
+    category_name VARCHAR(50) NOT NULL UNIQUE,
+    description VARCHAR(255)
+);
+
+-- Table des types de transaction
+CREATE TABLE transaction_types (
+    type_id INT AUTO_INCREMENT PRIMARY KEY,
+    type_name VARCHAR(20) NOT NULL UNIQUE
+);
+
+-- Table des transactions
+CREATE TABLE transactions (
+    transaction_id INT AUTO_INCREMENT PRIMARY KEY,
+    reference VARCHAR(50) NOT NULL,
+    description VARCHAR(255),
+    amount DECIMAL(10, 2) NOT NULL,
+    transaction_date TIMESTAMP NOT NULL,
+    type_id INT NOT NULL,
     category_id INT,
-    type ENUM('withdrawal', 'deposit', 'transfer') NOT NULL,
-    amount DECIMAL(15, 2) NOT NULL,
-    transaction_date DATETIME NOT NULL,
-    description TEXT,
-    destination_account_id INT DEFAULT NULL, -- For transfers
-    FOREIGN KEY (account_id) REFERENCES accounts(id) ON DELETE CASCADE,
-    FOREIGN KEY (destination_account_id) REFERENCES accounts(id) ON DELETE SET NULL
+    account_id INT NOT NULL,
+    recipient_account_id INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (type_id) REFERENCES transaction_types(type_id),
+    FOREIGN KEY (category_id) REFERENCES categories(category_id),
+    FOREIGN KEY (account_id) REFERENCES accounts(account_id) ON DELETE CASCADE,
+    FOREIGN KEY (recipient_account_id) REFERENCES accounts(account_id)
 );
 
--- User sessions table
-CREATE TABLE IF NOT EXISTS sessions (
-    id VARCHAR(255) PRIMARY KEY,
+-- Table des alertes
+CREATE TABLE alerts (
+    alert_id INT AUTO_INCREMENT PRIMARY KEY,
     user_id INT NOT NULL,
-    ip_address VARCHAR(45) NOT NULL,
-    user_agent TEXT,
-    creation_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-    expiration_date DATETIME NOT NULL,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    message VARCHAR(255) NOT NULL,
+    is_read BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
 );
 
--- Budget table by category
-CREATE TABLE IF NOT EXISTS budgets (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    category_id INT NOT NULL,
-    amount DECIMAL(15, 2) NOT NULL,
-    period ENUM('monthly', 'quarterly', 'annually') DEFAULT 'monthly',
-    start_date DATE NOT NULL,
-    end_date DATE,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-);
+-- Insertion des types de transaction
+INSERT INTO transaction_types (type_name) VALUES 
+('Dépôt'), 
+('Retrait'), 
+('Transfert');
+
+-- Insertion des catégories de base
+INSERT INTO categories (category_name, description) VALUES 
+('Loisir', 'Dépenses liées aux activités de loisir'),
+('Repas', 'Dépenses alimentaires'),
+('Transport', 'Dépenses liées aux transports'),
+('Logement', 'Dépenses liées au logement'),
+('Santé', 'Dépenses médicales'),
+('Salaire', 'Revenus professionnels'),
+('Autre', 'Autres types de transactions');
+
+-- Création d'un index pour optimiser les recherches par date
+CREATE INDEX idx_transaction_date ON transactions(transaction_date);
+CREATE INDEX idx_transaction_amount ON transactions(amount);
+CREATE INDEX idx_transaction_type ON transactions(type_id);
+CREATE INDEX idx_transaction_category ON transactions(category_id);
+
+
+
+
+--Users - Accounts: Relation (1,n)
+
+---Un utilisateur peut avoir plusieurs comptes (n)
+---Un compte appartient à un seul utilisateur (1)
+---C'est une relation de type "un à plusieurs"
+
+
+--Users - Alerts: Relation (1,n)
+
+---Un utilisateur peut recevoir plusieurs alertes (n)
+---Une alerte est liée à un seul utilisateur (1)
+---C'est une relation de type "un à plusieurs"
+
+
+--Accounts - Transactions: Relation (1,n)
+
+---Un compte peut avoir plusieurs transactions (n)
+---Une transaction est liée à un compte source (1)
+---C'est une relation de type "un à plusieurs"
+
+
+--Categories - Transactions: Relation (1,n)
+
+---Une catégorie peut être associée à plusieurs transactions (n)
+---Une transaction appartient à une seule catégorie (1)
+---C'est une relation de type "un à plusieurs"
+
+
+--Transaction_Types - Transactions: Relation (1,n)
+
+---Un type de transaction peut être associé à plusieurs transactions (n)
+---Une transaction est d'un seul type (1)
+---C'est une relation de type "un à plusieurs"
+
+
+--Accounts - Transactions (pour recipient_account_id): Relation (0,n)
+
+---Un compte peut être destinataire de plusieurs transferts (n)
+---Une transaction de type transfert a un seul compte destinataire (1)
+---Cette relation est optionnelle (0) car seules les transactions de type transfert ont un compte destinataire
+---C'est une relation de type "zéro ou un à plusieurs"
