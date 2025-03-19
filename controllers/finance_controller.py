@@ -1,4 +1,4 @@
-from models.compte import Compte
+from Budget_buddy.models.users import Compte
 from models.transaction import Transaction
 from database import Database
 from datetime import datetime

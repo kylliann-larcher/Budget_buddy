@@ -1,4 +1,4 @@
-from models.utilisateurs import Utilisateur
+from models.accounts import *
 from database import Database
 
 class UserController:

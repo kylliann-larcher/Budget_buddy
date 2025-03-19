@@ -6,7 +6,7 @@ class Database:
             host="localhost",
             user="root",
             password="@testsql", 
-            database="gestion_financiere1"
+            database="budget_buddy_finance"
         )
         self.cursor = self.conn.cursor(dictionary=True)
 
