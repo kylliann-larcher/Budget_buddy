@@ -1,13 +1,5 @@
 
 
-utilisateurs (users)
-  ├── comptes (accounts)
-  │     └── transactions (transactions)
-  │           ├── types_transaction (transaction_types)
-  │           └── catégories (categories)
-  └── alertes (alerts)
-
-
 -- Création de la base de données
 CREATE DATABASE IF NOT EXISTS gestion_financiere1;
 USE gestion_financiere1;
@@ -70,45 +62,3 @@ CREATE INDEX idx_transactions_type ON transactions(type_transaction);
 CREATE INDEX idx_transactions_categorie ON transactions(id_categorie);
 
 
-
---Users - Accounts: Relation (1,n)
-
----Un utilisateur peut avoir plusieurs comptes (n)
----Un compte appartient à un seul utilisateur (1)
----C'est une relation de type "un à plusieurs"
-
-
---Users - Alerts: Relation (1,n)
-
----Un utilisateur peut recevoir plusieurs alertes (n)
----Une alerte est liée à un seul utilisateur (1)
----C'est une relation de type "un à plusieurs"
-
-
---Accounts - Transactions: Relation (1,n)
-
----Un compte peut avoir plusieurs transactions (n)
----Une transaction est liée à un compte source (1)
----C'est une relation de type "un à plusieurs"
-
-
---Categories - Transactions: Relation (1,n)
-
----Une catégorie peut être associée à plusieurs transactions (n)
----Une transaction appartient à une seule catégorie (1)
----C'est une relation de type "un à plusieurs"
-
-
---Transaction_Types - Transactions: Relation (1,n)
-
----Un type de transaction peut être associé à plusieurs transactions (n)
----Une transaction est d'un seul type (1)
----C'est une relation de type "un à plusieurs"
-
-
---Accounts - Transactions (pour recipient_account_id): Relation (0,n)
-
----Un compte peut être destinataire de plusieurs transferts (n)
----Une transaction de type transfert a un seul compte destinataire (1)
----Cette relation est optionnelle (0) car seules les transactions de type transfert ont un compte destinataire
----C'est une relation de type "zéro ou un à plusieurs"
