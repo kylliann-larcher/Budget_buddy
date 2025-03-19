@@ -69,7 +69,6 @@ def transfer(from_account_id, to_account_id, amount):
 
 
 
-
 # Exemples 
 if __name__ == "__main__":
     deposit(1, 500)  # Déposit 500 sur le compte 1

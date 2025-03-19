@@ -9,94 +9,65 @@ utilisateurs (users)
 
 
 -- Création de la base de données
-CREATE DATABASE IF NOT EXISTS database_solana_zm;
-USE database_solana_zm;
+CREATE DATABASE IF NOT EXISTS gestion_financiere1;
+USE gestion_financiere1;
 
 -- Table des utilisateurs
-CREATE TABLE users (
-    user_id INT AUTO_INCREMENT PRIMARY KEY,
-    lastname VARCHAR(50) NOT NULL,
-    firstname VARCHAR(50) NOT NULL,
-    email VARCHAR(100) NOT NULL UNIQUE,
-    password_hash VARCHAR(255) NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+CREATE TABLE IF NOT EXISTS utilisateurs (
+    id_utilisateur INT PRIMARY KEY AUTO_INCREMENT,
+    nom VARCHAR(100) NOT NULL,
+    prenom VARCHAR(100) NOT NULL,
+    email VARCHAR(255) NOT NULL UNIQUE,  -- Contrainte UNIQUE pour garantir un seul compte par email
+    mot_de_passe VARCHAR(255) NOT NULL,  -- Pour stocker le mot de passe haché
+    date_creation DATETIME DEFAULT CURRENT_TIMESTAMP,
+    derniere_connexion DATETIME
 );
 
 -- Table des comptes bancaires
-CREATE TABLE accounts (
-    account_id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    account_name VARCHAR(50) NOT NULL,
-    balance DECIMAL(10, 2) NOT NULL DEFAULT 0.00,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+CREATE TABLE IF NOT EXISTS comptes (
+    id_compte INT PRIMARY KEY AUTO_INCREMENT,
+    id_utilisateur INT NOT NULL UNIQUE,  -- Contrainte UNIQUE pour garantir un seul compte par utilisateur
+    solde DECIMAL(15, 2) DEFAULT 0.00 NOT NULL,
+    date_creation DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (id_utilisateur) REFERENCES utilisateurs(id_utilisateur) ON DELETE CASCADE
 );
 
--- Table des catégories de transaction
-CREATE TABLE categories (
-    category_id INT AUTO_INCREMENT PRIMARY KEY,
-    category_name VARCHAR(50) NOT NULL UNIQUE,
+-- Table des catégories de transactions
+CREATE TABLE IF NOT EXISTS categories (
+    id_categorie INT PRIMARY KEY AUTO_INCREMENT,
+    nom VARCHAR(100) NOT NULL,
     description VARCHAR(255)
 );
 
--- Table des types de transaction
-CREATE TABLE transaction_types (
-    type_id INT AUTO_INCREMENT PRIMARY KEY,
-    type_name VARCHAR(20) NOT NULL UNIQUE
-);
+-- Insertion des catégories par défaut
+INSERT INTO categories (nom, description) VALUES
+    ('Loisir', 'Dépenses liées aux loisirs et divertissements'),
+    ('Repas', 'Dépenses liées à l''alimentation'),
+    ('Pot-de-vin', 'Transactions diverses'),
+    ('Factures', 'Paiement de factures'),
+    ('Salaire', 'Revenus provenant du travail'),
+    ('Autres', 'Autres types de transactions');
 
 -- Table des transactions
-CREATE TABLE transactions (
-    transaction_id INT AUTO_INCREMENT PRIMARY KEY,
+CREATE TABLE IF NOT EXISTS transactions (
+    id_transaction INT PRIMARY KEY AUTO_INCREMENT,
     reference VARCHAR(50) NOT NULL,
     description VARCHAR(255),
-    amount DECIMAL(10, 2) NOT NULL,
-    transaction_date TIMESTAMP NOT NULL,
-    type_id INT NOT NULL,
-    category_id INT,
-    account_id INT NOT NULL,
-    recipient_account_id INT,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (type_id) REFERENCES transaction_types(type_id),
-    FOREIGN KEY (category_id) REFERENCES categories(category_id),
-    FOREIGN KEY (account_id) REFERENCES accounts(account_id) ON DELETE CASCADE,
-    FOREIGN KEY (recipient_account_id) REFERENCES accounts(account_id)
+    montant DECIMAL(15, 2) NOT NULL,
+    date_transaction DATETIME DEFAULT CURRENT_TIMESTAMP,
+    type_transaction ENUM('retrait', 'depot', 'transfert') NOT NULL,
+    id_compte INT NOT NULL,
+    id_compte_destination INT, -- Pour les transferts uniquement
+    id_categorie INT NOT NULL,
+    FOREIGN KEY (id_compte) REFERENCES comptes(id_compte) ON DELETE CASCADE,
+    FOREIGN KEY (id_compte_destination) REFERENCES comptes(id_compte) ON DELETE SET NULL,
+    FOREIGN KEY (id_categorie) REFERENCES categories(id_categorie)
 );
 
--- Table des alertes
-CREATE TABLE alerts (
-    alert_id INT AUTO_INCREMENT PRIMARY KEY,
-    user_id INT NOT NULL,
-    message VARCHAR(255) NOT NULL,
-    is_read BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
-);
-
--- Insertion des types de transaction
-INSERT INTO transaction_types (type_name) VALUES 
-('Dépôt'), 
-('Retrait'), 
-('Transfert');
-
--- Insertion des catégories de base
-INSERT INTO categories (category_name, description) VALUES 
-('Loisir', 'Dépenses liées aux activités de loisir'),
-('Repas', 'Dépenses alimentaires'),
-('Transport', 'Dépenses liées aux transports'),
-('Logement', 'Dépenses liées au logement'),
-('Santé', 'Dépenses médicales'),
-('Salaire', 'Revenus professionnels'),
-('Autre', 'Autres types de transactions');
-
--- Création d'un index pour optimiser les recherches par date
-CREATE INDEX idx_transaction_date ON transactions(transaction_date);
-CREATE INDEX idx_transaction_amount ON transactions(amount);
-CREATE INDEX idx_transaction_type ON transactions(type_id);
-CREATE INDEX idx_transaction_category ON transactions(category_id);
-
+-- Créer un index pour améliorer les performances des recherches
+CREATE INDEX idx_transactions_date ON transactions(date_transaction);
+CREATE INDEX idx_transactions_type ON transactions(type_transaction);
+CREATE INDEX idx_transactions_categorie ON transactions(id_categorie);
 
 
 
