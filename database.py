@@ -49,9 +49,12 @@ class Database:
         try:
             self.execute("UPDATE accounts SET amount = amount + %s WHERE id_users = %s", (amount, user_id))
             self.commit()
-            self.execute("INSERT INTO transactions (id_account, type_transaction, amount, date_transaction) VALUES (%s, 'deposit', %s, NOW())", (user_id, amount))
-            self.commit()
-            return True
+
+            account_id = self.get_account_id(user_id)
+            if account_id:
+                self.execute("INSERT INTO transactions (id_account, type_transaction, amount, date_transaction) VALUES (%s, 'deposit', %s, NOW())", (user_id, amount))
+                self.commit()
+                return True
         except mysql.connector.Error as err:
             print(f"Erreur SQL: {err}")
             return False
@@ -63,18 +66,18 @@ class Database:
             if result and result["amount"] >= amount:
                 self.execute("UPDATE accounts SET amount = amount - %s WHERE id_users = %s", (amount, user_id))
                 self.commit()
-                self.execute("INSERT INTO transactions (id_account, type_transaction, amount, date_transaction) VALUES (%s, 'withdraw', %s, NOW())", (user_id, amount))
-                self.commit()
-                return True
+
+                account_id = self.get_account_id(user_id)
+                if account_id:
+                    self.execute("INSERT INTO transactions (id_account, type_transaction, amount, date_transaction) VALUES (%s, 'withdraw', %s, NOW())", (user_id, amount))
+                    self.commit()
+                    return True
             else:
                 print(f"Insufficient funds: {result['amount']} < {amount}")
             return False
         except mysql.connector.Error as err:
             print(f"Erreur SQL: {err}")
             return False
-
-
-
 
     def transfer(self, user_id, recipient_id, amount):
         try:
@@ -84,22 +87,30 @@ class Database:
                 self.execute("UPDATE accounts SET amount = amount - %s WHERE id_users = %s", (amount, user_id))
                 self.execute("UPDATE accounts SET amount = amount + %s WHERE id_users = %s", (amount, recipient_id))
                 self.commit()
-                self.execute("INSERT INTO transactions (id_account, type_transaction, amount, date_transaction) VALUES (%s, 'transfer', %s, NOW())", (user_id, amount))
-                self.commit()
-                return True
+
+                account_id = self.get_account_id(user_id)
+                if account_id:
+                    self.execute("INSERT INTO transactions (id_account, type_transaction, amount, date_transaction) VALUES (%s, 'transfer', %s, NOW())", (user_id, amount))
+                    self.commit()
+                    return True
             return False
         except mysql.connector.Error as err:
             print(f"Erreur SQL: {err}")
             return False
 
+    def get_account_id(self, user_id):
+        cursor = self.execute("SELECT id_account FROM accounts WHERE id_users = %s", (user_id,))
+        result = cursor.fetchone()
+        return result["id_account"] if result else None
+
 
     def get_transactions(self, user_id):
         try:
-            cursor = self.execute("SELECT * FROM transactions WHERE id_account = %s ORDER BY date DESC", (user_id,))
+            cursor = self.execute("SELECT * FROM transactions WHERE id_account = %s ORDER BY date_transaction DESC", (user_id,))
             result = cursor.fetchall()
             if not result:
                 print("No transactions found.")
-            return result if result else []
+            return result
         except mysql.connector.Error as err:
             print(f"Erreur SQL: {err}")
             return []

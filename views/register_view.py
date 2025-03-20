@@ -1,6 +1,8 @@
+from config import *
 import tkinter as tk
 from tkinter import ttk, messagebox
 from controllers.user_controller import UserController
+import tkinter.font
 
 class RegisterView:
     def __init__(self, root, show_login):
@@ -9,30 +11,42 @@ class RegisterView:
         self.show_login = show_login
         self.controller = UserController() 
 
-        # Cadre principal
-        self.frame = ttk.Frame(root, padding="20")
-        self.frame.pack(fill="both", expand=True)
+        TITLE_FONT = tkinter.font.Font(family=family_font, size=title_size_font, weight=weight_font)
+        SECOND_TITLE_FONT = tkinter.font.Font(family=family_font, size=second_title_size_font, weight=weight_font)
+        FONT = tkinter.font.Font(family=family_font, size=size_font, weight=weight_font)
 
-        ttk.Label(self.frame, text="Register", font=("Arial", 16)).grid(column=0, row=0, columnspan=2, pady=10)
+        # Center columns
+        self.root.columnconfigure(0, weight=1)
+        self.root.columnconfigure(1, weight=1)
+        self.root.columnconfigure(2, weight=1)
+        self.root.rowconfigure(0, weight=1)
+        self.root.rowconfigure(1, weight=1)
+        self.root.rowconfigure(2, weight=1)
+
+        # Cadre principal
+        self.frame = ttk.Frame(root)
+        self.frame.grid(row=1, column=1, padx=20, pady=20)
+
+        ttk.Label(self.frame, text="Register", font=TITLE_FONT).grid(column=0, row=0, columnspan=2, pady=10)
 
         # Champs de saisie
-        ttk.Label(self.frame, text="Name : ").grid(column=0, row=1, sticky=tk.W, pady=5)
+        ttk.Label(self.frame, text="Name : ", font=FONT).grid(column=0, row=1, sticky=tk.W, pady=5)
         self.name_entry = ttk.Entry(self.frame, width=30)
         self.name_entry.grid(column=1, row=1, pady=5)
 
-        ttk.Label(self.frame, text="First Name : ").grid(column=0, row=2, sticky=tk.W, pady=5)
+        ttk.Label(self.frame, text="First Name : ", font=FONT).grid(column=0, row=2, sticky=tk.W, pady=5)
         self.first_name_entry = ttk.Entry(self.frame, width=30)
         self.first_name_entry.grid(column=1, row=2, pady=5)
 
-        ttk.Label(self.frame, text="Email : ").grid(column=0, row=3, sticky=tk.W, pady=5)
+        ttk.Label(self.frame, text="Email : ", font=FONT).grid(column=0, row=3, sticky=tk.W, pady=5)
         self.email_entry = ttk.Entry(self.frame, width=30)
         self.email_entry.grid(column=1, row=3, pady=5)
 
-        ttk.Label(self.frame, text="Password : ").grid(column=0, row=4, sticky=tk.W, pady=5)
+        ttk.Label(self.frame, text="Password : ", font=FONT).grid(column=0, row=4, sticky=tk.W, pady=5)
         self.password_entry = ttk.Entry(self.frame, width=30, show="*")
         self.password_entry.grid(column=1, row=4, pady=5)
 
-        ttk.Label(self.frame, text="Confirm Password : ").grid(column=0, row=5, sticky=tk.W, pady=5)
+        ttk.Label(self.frame, text="Confirm Password : ", font=FONT).grid(column=0, row=5, sticky=tk.W, pady=5)
         self.confirm_password_entry = ttk.Entry(self.frame, width=30, show="*")
         self.confirm_password_entry.grid(column=1, row=5, pady=5)
 
@@ -40,7 +54,7 @@ class RegisterView:
         ttk.Label(self.frame, text="Password need to have\n"
                                    "- One uppercase letter\n- One lowercase letter\n"
                                    "- One number\n- One special caracter\n"
-                                   "- Minimum 10 caracters", justify="left").grid(column=0, row=6, columnspan=2, pady=5)
+                                   "- Minimum 10 caracters", justify="left", font=FONT).grid(column=0, row=6, columnspan=2, pady=5)
 
         # Boutons
         btn_frame = ttk.Frame(self.frame)

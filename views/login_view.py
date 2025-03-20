@@ -1,5 +1,6 @@
 from config import *
 import tkinter as tk
+import tkinter.font
 from tkinter import ttk, messagebox
 from controllers.user_controller import UserController
 from views.dashboard_view import DashboardView
@@ -10,7 +11,11 @@ class LoginView:
         self.show_register = show_register
         self.show_dashboard = show_dashboard
         self.root.title("Solana Bank | Connection")
-        self.root.geometry(MINI_WINDOW_SIZE)
+        self.root.geometry(WINDOW_SIZE)
+
+        TITLE_FONT = tkinter.font.Font(family=family_font, size=title_size_font, weight=weight_font)
+        SECOND_TITLE_FONT = tkinter.font.Font(family=family_font, size=second_title_size_font, weight=weight_font)
+        FONT = tkinter.font.Font(family=family_font, size=size_font, weight=weight_font)
 
         # Center columns
         self.root.columnconfigure(0, weight=1)
@@ -24,13 +29,13 @@ class LoginView:
         frame = ttk.Frame(root)
         frame.grid(row=1, column=1, padx=20, pady=20)
 
-        ttk.Label(frame, text="Login", font=("Arial", 16)).grid(column=0, row=0, columnspan=2, pady=10)
+        ttk.Label(frame, text="Login", font=TITLE_FONT).grid(column=0, row=0, columnspan=2, pady=10)
         
-        ttk.Label(frame, text="Email : ").grid(row=1, column=0, padx=5, pady=5, sticky="e")
+        ttk.Label(frame, text="Email : ", font=FONT).grid(row=1, column=0, padx=5, pady=5, sticky="e")
         self.email_entry = ttk.Entry(frame, width=25)
         self.email_entry.grid(row=1, column=1, padx=5, pady=5)
     
-        ttk.Label(frame, text="Password : ").grid(row=2, column=0, padx=5, pady=5, sticky="e")
+        ttk.Label(frame, text="Password : ", font=FONT).grid(row=2, column=0, padx=5, pady=5, sticky="e")
         self.password_entry = ttk.Entry(frame, width=25, show="*")
         self.password_entry.grid(row=2, column=1, padx=5, pady=5)
 
