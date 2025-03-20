@@ -4,7 +4,7 @@ from database import Database
 from datetime import datetime
 
 class FinanceController:
-    def deposit(self, id_user, amount, description, id_category):
+    def deposit(self, id_users, amount, description, id_category):
         if amount <= 0:
             return "Amount must to be > 0"
 
@@ -12,19 +12,20 @@ class FinanceController:
         
         try:
             # Update amount
-            db.execute("UPDATE comptes SET solde = solde + %s WHERE id_user = %s", (amount, id_user))
+            db.execute("UPDATE accounts SET amount = amount + %s WHERE id_users = %s", (amount, id_users))
             
             # Add transaction
-            transaction = Transaction(id_user, amount, "depot", description, id_category)
+            transaction = Transaction(id_users, amount, "depot", description, id_category)
             transaction.save()
             
             db.commit()
             return f"Deposit of {amount:.2f} € done."
+        
         except Exception as e:
             db.close()
             return f"Error in deposit : {e}"
 
-    def debit(self, id_user, amount, description, id_category):
+    def debit(self, id_users, amount, description, id_category):
         if amount <= 0:
             return "Amount must to be > 0"
 
@@ -32,15 +33,15 @@ class FinanceController:
         
         try:
             # Amount need in account
-            solde = db.execute("SELECT solde FROM comptes WHERE id_user = %s", (id_user,)).fetchone()
-            if solde["solde"] < amount:
+            amount = db.execute("SELECT amount FROM accounts WHERE id_users = %s", (id_users,)).fetchone()
+            if amount["amount"] < amount:
                 return "Need more money..."
 
             # Update in account
-            db.execute("UPDATE comptes SET solde = solde - %s WHERE id_user = %s", (amount, id_user))
+            db.execute("UPDATE accounts SET amount = amount - %s WHERE id_users = %s", (amount, id_users))
 
             # Add transaction
-            transaction = Transaction(id_user, amount, "retrait", description, id_category)
+            transaction = Transaction(id_users, amount, "retrait", description, id_category)
             transaction.save()
 
             db.commit()
@@ -49,30 +50,30 @@ class FinanceController:
             db.close()
             return f"Error in debit : {e}"
 
-    def transfer(self, id_user_source, id_user_dest, amount, description, id_category):
+    def transfer(self, id_users_source, id_users_dest, amount, description, id_category):
         if amount <= 0:
             return "Amount must to be > 0"
 
         db = Database()
         
         try:
-            # Vérifier le solde du compte source
-            solde_source = db.execute("SELECT solde FROM comptes WHERE id_user = %s", (id_user_source,)).fetchone()
-            if solde_source["solde"] < amount:
+            # Vérifier le amount du compte source
+            amount_source = db.execute("SELECT amount FROM accounts WHERE id_users = %s", (id_users_source,)).fetchone()
+            if amount_source["amount"] < amount:
                 return "Need more money..."
 
             # Débiter le compte source
-            db.execute("UPDATE comptes SET solde = solde - %s WHERE id_user = %s", (amount, id_user_source))
+            db.execute("UPDATE accounts SET amount = amount - %s WHERE id_users = %s", (amount, id_users_source))
 
             # Créditer le compte destination
-            db.execute("UPDATE comptes SET solde = solde + %s WHERE id_user = %s", (amount, id_user_dest))
+            db.execute("UPDATE accounts SET amount = amount + %s WHERE id_users = %s", (amount, id_users_dest))
 
             # Ajouter la transaction
-            reference = f"TRF{datetime.now().strftime('%Y%m%d%H%M%S')}{id_user_source}"
+            reference = f"TRF{datetime.now().strftime('%Y%m%d%H%M%S')}{id_users_source}"
             db.execute("""
-                INSERT INTO transactions (reference, description, amount, type_transaction, id_user, id_user_destination, id_category)
+                INSERT INTO transactions (reference, description, amount, type_transaction, id_account, id_account_destination, id_category)
                 VALUES (%s, %s, %s, 'transfert', %s, %s, %s)
-            """, (reference, description, amount, id_user_source, id_user_dest, id_category))
+            """, (reference, description, amount, id_users_source, id_users_dest, id_category))
 
             db.commit()
             return f"Transfer of {amount:.2f} € done."
@@ -80,24 +81,24 @@ class FinanceController:
             db.close()
             return f"Error in transfer : {e}"
 
-    def get_transaction(self, id_user, filters):
+    def get_transaction(self, id_users, filters):
         db = Database()
         
         try:
             query = """
-                SELECT t.reference, t.description, t.amount, t.date_transaction, t.type_transaction, c.nom AS categorie
+                SELECT t.reference, t.description, t.amount, t.date_transaction, t.type_transaction, c.name AS category
                 FROM transactions t
                 JOIN categories c ON t.id_category = c.id_category
-                WHERE t.id_user = %s
+                WHERE t.id_account = %s
             """
-            params = [id_user]
+            params = [id_users]
 
             # Ajout des filters
-            if "date_debut" in filters:
+            if "date_begin" in filters:
                 query += " AND t.date_transaction >= %s"
                 params.append(filters["date_debut"])
             
-            if "date_fin" in filters:
+            if "date_finish" in filters:
                 query += " AND t.date_transaction <= %s"
                 params.append(filters["date_fin"])
 
@@ -105,9 +106,9 @@ class FinanceController:
                 query += " AND t.type_transaction = %s"
                 params.append(filters["type"].lower())
 
-            if "categorie" in filters and filters["categorie"] != "Toutes":
-                query += " AND c.nom = %s"
-                params.append(filters["categorie"])
+            if "category" in filters and filters["category"] != "Toutes":
+                query += " AND c.name = %s"
+                params.append(filters["category"])
 
             query += " ORDER BY t.date_transaction DESC"
 

@@ -66,13 +66,13 @@ class RegisterView:
             return
 
         # Appel du contrôleur
-        resultat = self.controller.register(name, first_name, email, password)
+        result = self.controller.save_user(name, first_name, email, password)
 
-        if "success" in resultat.lower():
-            messagebox.showinfo("Success", resultat)
-            self.show_login()  # Redirige vers l'écran de connexion
+        if "success" in result.lower():
+            messagebox.showinfo("Success", result)
+            self.show_login()
         else:
-            messagebox.showerror("Error", resultat)
+            messagebox.showerror("Error", result)
 
     def back_connection(self):
         self.frame.destroy()

@@ -1,10 +1,94 @@
+from config import *
 import tkinter as tk
-from tkinter import ttk
+from tkinter import ttk, messagebox, simpledialog
 from controllers.user_controller import UserController
+from database import *
 
 class DashboardView:
-    def __init__(self, root):
+    def __init__(self, root, show_login, user_id):
         self.root = root
+        self.show_login = show_login
+        self.user_id = user_id
         self.root.title("Solana Bank | Dashboard")
+        self.root.geometry(WINDOW_SIZE)
 
-        ttk.Label(root, text="Welcome to your dashboard").pack()
+        self.database = Database()
+        
+        self.create_widgets()
+
+    def create_widgets(self):
+        ttk.Label(self.root, text="Welcome to your dashboard", font=("Arial", 16)).pack(pady=10)
+        
+        btn_frame = ttk.Frame(self.root)
+        btn_frame.pack(pady=10)
+
+        ttk.Button(btn_frame, text="Deposit", command=self.deposit_money).grid(row=0, column=0, padx=10)
+        ttk.Button(btn_frame, text="Withdraw", command=self.withdraw_money).grid(row=0, column=1, padx=10)
+        ttk.Button(btn_frame, text="Transfer", command=self.transfer_money).grid(row=0, column=2, padx=10)
+        ttk.Button(btn_frame, text="Transaction History", command=self.view_transactions).grid(row=0, column=3, padx=10)
+        ttk.Button(btn_frame, text="Disconnect", command=self.show_login).grid(row=0, column=4, padx=10)
+        
+        self.balance_label = ttk.Label(self.root, text="Balance: 0.00€", font=("Arial", 14))
+        self.balance_label.pack(pady=10)
+        
+        self.update_balance()
+
+    def update_balance(self):
+        balance = self.database.get_balance(self.user_id)
+        self.balance_label.config(text=f"Balance: {balance:.2f}€")
+
+    def deposit_money(self):
+        amount = self.get_amount("Deposit Amount")
+        if amount:
+            self.database.deposit(self.user_id, amount)
+            self.update_balance()
+            messagebox.showinfo("Success", "Deposit successful!")
+
+    def withdraw_money(self):
+        amount = self.get_amount("Withdraw Amount")
+        if amount:
+            if self.database.withdraw(self.user_id, amount):
+                self.update_balance()
+                messagebox.showinfo("Success", "Withdrawal successful!")
+            else:
+                messagebox.showwarning("Error", "Insufficient funds! PROBLEM")
+    
+    def transfer_money(self):
+        recipient_id = simpledialog.askinteger("Transfer", "Enter recipient ID:")
+        amount = self.get_amount("Transfer Amount")
+        if recipient_id and amount:
+            if self.database.transfer(self.user_id, recipient_id, amount):
+                self.update_balance()
+                messagebox.showinfo("Success", "Transfer successful!")
+            else:
+                messagebox.showwarning("Error", "Transfer failed!")
+    
+    def view_transactions(self):
+        transactions = self.database.get_transactions(self.user_id)
+        history_window = tk.Toplevel(self.root)
+        history_window.title("Transaction History")
+        
+        tree = ttk.Treeview(history_window, columns=("Type", "Amount", "Date"), show="headings")
+        tree.heading("Type", text="Type")
+        tree.heading("Amount", text="Amount")
+        tree.heading("Date", text="Date")
+        
+        for t in transactions:
+            tree.insert("", "end", values=(t["type"], f"{t["amount"]:.2f}€", t["date"]))
+        
+        tree.pack(padx=10, pady=10)
+    
+    def get_amount(self, prompt):
+        try:
+            amount = float(simpledialog.askstring("Input", prompt))
+            if amount <= 0:
+                raise ValueError
+            return amount
+        except (ValueError, TypeError):
+            messagebox.showwarning("Error", "Invalid amount!")
+            return None
+
+# Usage Example:
+# root = tk.Tk()
+# dashboard = DashboardView(root, lambda: print("Logout"), user_id=1)
+# root.mainloop()

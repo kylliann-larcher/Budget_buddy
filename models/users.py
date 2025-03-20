@@ -8,7 +8,7 @@ class Compte:
     def create_user(self):
         db = Database()
         db.execute("""
-            INSERT INTO comptes (id_users, sold)
+            INSERT INTO accounts (id_users, amount)
             VALUES (%s, %s)
         """, (self.id_users, self.sold))
         db.commit()
