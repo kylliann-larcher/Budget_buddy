@@ -1,4 +1,4 @@
-# Verification info login
+# Verification Informations for login
 import re
 
 def verif_email(email):

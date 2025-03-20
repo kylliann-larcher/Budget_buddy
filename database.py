@@ -1,7 +1,9 @@
+# Database File
 import mysql.connector
 
 class Database:
     def __init__(self):
+        # Connection to local db
         self.conn = mysql.connector.connect(
             host="localhost",
             user="root",
@@ -10,10 +12,12 @@ class Database:
         )
         self.cursor = self.conn.cursor(dictionary=True)
 
+    # Execute request
     def execute(self, query, params=None):
         self.cursor.execute(query, params or ())
         return self.cursor
 
+    # Apply request
     def commit(self):
         self.conn.commit()
 
@@ -21,6 +25,7 @@ class Database:
         self.cursor.close()
         self.conn.close()
 
+    # Check tables in db
     def verif_tables(self):
         try:
             self.execute("SHOW TABLES")
@@ -36,6 +41,7 @@ class Database:
         except mysql.connector.Error as err:
             print(f"Database error : {err}")
 
+    # Get amount in accounts of a user
     def get_balance(self, user_id):
         try:
             cursor = self.execute("SELECT amount FROM accounts WHERE id_users = %s", (user_id,))
@@ -45,6 +51,7 @@ class Database:
             print(f"Erreur SQL: {err}")
             return 0.0
 
+    # Modify in db deposit
     def deposit(self, user_id, amount):
         try:
             self.execute("UPDATE accounts SET amount = amount + %s WHERE id_users = %s", (amount, user_id))
@@ -59,6 +66,7 @@ class Database:
             print(f"Erreur SQL: {err}")
             return False
 
+    # Modify in db withdraw
     def withdraw(self, user_id, amount):
         try:
             cursor = self.execute("SELECT amount FROM accounts WHERE id_users = %s", (user_id,))
@@ -79,6 +87,7 @@ class Database:
             print(f"Erreur SQL: {err}")
             return False
 
+    # Modify in db transfer
     def transfer(self, user_id, recipient_id, amount):
         try:
             cursor = self.execute("SELECT amount FROM accounts WHERE id_users = %s", (user_id,))
@@ -98,12 +107,13 @@ class Database:
             print(f"Erreur SQL: {err}")
             return False
 
+    # Get user in 'accounts' table
     def get_account_id(self, user_id):
         cursor = self.execute("SELECT id_account FROM accounts WHERE id_users = %s", (user_id,))
         result = cursor.fetchone()
         return result["id_account"] if result else None
 
-
+    # Get table transactions
     def get_transactions(self, user_id):
         try:
             cursor = self.execute("SELECT * FROM transactions WHERE id_account = %s ORDER BY date_transaction DESC", (user_id,))

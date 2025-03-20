@@ -1,13 +1,15 @@
-from Budget_buddy.models.users import Compte
+# Controller for finance
 from models.transaction import Transaction
 from database import Database
 from datetime import datetime
 
 class FinanceController:
+    # Verif for allow deposit and apply
     def deposit(self, id_users, amount, description, id_category):
         if amount <= 0:
             return "Amount must to be > 0"
 
+        # Connect db
         db = Database()
         
         try:
@@ -25,6 +27,7 @@ class FinanceController:
             db.close()
             return f"Error in deposit : {e}"
 
+    # Verif for allow debit and apply
     def debit(self, id_users, amount, description, id_category):
         if amount <= 0:
             return "Amount must to be > 0"
@@ -50,6 +53,7 @@ class FinanceController:
             db.close()
             return f"Error in debit : {e}"
 
+    # Verif for allow transfer and apply
     def transfer(self, id_users_source, id_users_dest, amount, description, id_category):
         if amount <= 0:
             return "Amount must to be > 0"
@@ -57,18 +61,18 @@ class FinanceController:
         db = Database()
         
         try:
-            # Vérifier le amount du compte source
+            # Check amount available
             amount_source = db.execute("SELECT amount FROM accounts WHERE id_users = %s", (id_users_source,)).fetchone()
             if amount_source["amount"] < amount:
                 return "Need more money..."
 
-            # Débiter le compte source
+            # Retire amount from begin
             db.execute("UPDATE accounts SET amount = amount - %s WHERE id_users = %s", (amount, id_users_source))
 
-            # Créditer le compte destination
+            # Add amount for destinatary
             db.execute("UPDATE accounts SET amount = amount + %s WHERE id_users = %s", (amount, id_users_dest))
 
-            # Ajouter la transaction
+            # Add transaction
             reference = f"TRF{datetime.now().strftime('%Y%m%d%H%M%S')}{id_users_source}"
             db.execute("""
                 INSERT INTO transactions (reference, description, amount, type_transaction, id_account, id_account_destination, id_category)
@@ -81,6 +85,7 @@ class FinanceController:
             db.close()
             return f"Error in transfer : {e}"
 
+    # Get transactions in db
     def get_transaction(self, id_users, filters):
         db = Database()
         
@@ -93,7 +98,7 @@ class FinanceController:
             """
             params = [id_users]
 
-            # Ajout des filters
+            # Add filters
             if "date_begin" in filters:
                 query += " AND t.date_transaction >= %s"
                 params.append(filters["date_debut"])

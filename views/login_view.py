@@ -1,9 +1,8 @@
+# Login Interface
 from config import *
 import tkinter as tk
-import tkinter.font
 from tkinter import ttk, messagebox
 from controllers.user_controller import UserController
-from views.dashboard_view import DashboardView
 
 class LoginView:
     def __init__(self, root, show_register, show_dashboard):
@@ -21,10 +20,11 @@ class LoginView:
         self.root.rowconfigure(1, weight=1)
         self.root.rowconfigure(2, weight=1)
 
-        # Content center
+        # Frame
         frame = ttk.Frame(root)
         frame.grid(row=1, column=1, padx=20, pady=20)
 
+        # Content
         ttk.Label(frame, text="Login", font=('Arial', 18)).grid(column=0, row=0, columnspan=2, pady=10)
         
         ttk.Label(frame, text="Email : ").grid(row=1, column=0, padx=5, pady=5, sticky="e")
@@ -35,13 +35,14 @@ class LoginView:
         self.password_entry = ttk.Entry(frame, width=25, show="*")
         self.password_entry.grid(row=2, column=1, padx=5, pady=5)
 
+        # Buttons
         self.login_button = ttk.Button(frame, text="Login", command=self.connecter)
         self.login_button.grid(row=3, column=1, pady=10)
 
         self.go_register_button = ttk.Button(frame, text="Register", command=self.show_register)
         self.go_register_button.grid(row=4, column=1, pady=10)
 
-
+    # To connect an user from db
     def connecter(self):
         email = self.email_entry.get()
         password = self.password_entry.get()
@@ -53,9 +54,3 @@ class LoginView:
             self.show_dashboard(user_id)
         else:
             messagebox.showerror("Error", "Invalid email or password")
-
-
-if __name__ == "__main__":
-    root = tk.Tk()
-    app = LoginView(root)
-    root.mainloop()

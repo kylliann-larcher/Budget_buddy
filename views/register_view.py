@@ -1,8 +1,8 @@
+# Register interface
 from config import *
 import tkinter as tk
 from tkinter import ttk, messagebox
 from controllers.user_controller import UserController
-import tkinter.font
 
 class RegisterView:
     def __init__(self, root, show_login):
@@ -19,13 +19,13 @@ class RegisterView:
         self.root.rowconfigure(1, weight=1)
         self.root.rowconfigure(2, weight=1)
 
-        # Cadre principal
+        # Frame
         self.frame = ttk.Frame(root)
         self.frame.grid(row=1, column=1, padx=20, pady=20)
 
+        # Content
         ttk.Label(self.frame, text="Register", font=('Arial', 18)).grid(column=0, row=0, columnspan=2, pady=10)
 
-        # Champs de saisie
         ttk.Label(self.frame, text="Name : ").grid(column=0, row=1, sticky=tk.W, pady=5)
         self.name_entry = ttk.Entry(self.frame, width=30)
         self.name_entry.grid(column=1, row=1, pady=5)
@@ -46,19 +46,20 @@ class RegisterView:
         self.confirm_password_entry = ttk.Entry(self.frame, width=30, show="*")
         self.confirm_password_entry.grid(column=1, row=5, pady=5)
 
-        # Message d'information
+        # Informations must for fields
         ttk.Label(self.frame, text="Password need to have\n"
                                    "- One uppercase letter\n- One lowercase letter\n"
                                    "- One number\n- One special caracter\n"
                                    "- Minimum 5 caracters", justify="left").grid(column=0, row=6, columnspan=2, pady=5)
 
-        # Boutons
+        # Buttons
         btn_frame = ttk.Frame(self.frame)
         btn_frame.grid(column=0, row=7, columnspan=2, pady=10)
 
         ttk.Button(btn_frame, text="Register", command=self.register).pack(side=tk.LEFT, padx=5)
         ttk.Button(btn_frame, text="Back", command=self.back_connection).pack(side=tk.LEFT, padx=5)
 
+    # To register new user
     def register(self):
         name = self.name_entry.get().strip()
         first_name = self.first_name_entry.get().strip()
@@ -66,7 +67,7 @@ class RegisterView:
         password = self.password_entry.get()
         confirm_password = self.confirm_password_entry.get()
 
-        # Vérification des champs
+        # Verif completed fields and password
         if not all([name, first_name, email, password, confirm_password]):
             messagebox.showerror("Error", "All fields must be completed")
             return
@@ -75,7 +76,7 @@ class RegisterView:
             messagebox.showerror("Error", "Passwords doesn't fit together")
             return
 
-        # Appel du contrôleur
+        # Call saver
         result = self.controller.save_user(name, first_name, email, password)
 
         if "success" in result.lower():
@@ -84,6 +85,7 @@ class RegisterView:
         else:
             messagebox.showerror("Error", result)
 
+    # For button back to go login interface
     def back_connection(self):
         self.frame.destroy()
         self.show_login()
