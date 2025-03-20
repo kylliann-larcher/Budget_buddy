@@ -5,8 +5,8 @@ class Database:
         self.conn = mysql.connector.connect(
             host="localhost",
             user="root",
-            password="@testsql", 
-            database="budget_buddy_finance"
+            password="Kylliann2110", 
+            database="database_solana"
         )
         self.cursor = self.conn.cursor(dictionary=True)
 
@@ -35,3 +35,4 @@ class Database:
                 self.commit()
         except mysql.connector.Error as err:
             print(f"Database error : {err}")
+Database.verif_tables
