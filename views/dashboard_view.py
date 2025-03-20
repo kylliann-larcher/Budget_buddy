@@ -13,27 +13,23 @@ class DashboardView:
         self.root.title("Solana Bank | Dashboard")
         self.root.geometry(WINDOW_SIZE)
 
-        self.TITLE_FONT = tkinter.font.Font(family=family_font, size=title_size_font, weight=weight_font)
-        self.SECOND_TITLE_FONT = tkinter.font.Font(family=family_font, size=second_title_size_font, weight=weight_font)
-        self.FONT = tkinter.font.Font(family=family_font, size=size_font, weight=weight_font)
-
         self.database = Database()
         
         self.create_widgets()
 
     def create_widgets(self):
-        ttk.Label(self.root, text="Welcome to your dashboard", font=self.TITLE_FONT).pack(pady=10)
+        ttk.Label(self.root, text="Welcome to your dashboard", font=('Arial', 20)).pack(pady=10)
         
         btn_frame = ttk.Frame(self.root)
         btn_frame.pack(pady=10)
 
-        ttk.Button(btn_frame, text="Deposit", font=self.FONT, command=self.deposit_money).grid(row=0, column=0, padx=10)
-        ttk.Button(btn_frame, text="Withdraw", font=self.FONT, command=self.withdraw_money).grid(row=0, column=1, padx=10)
-        ttk.Button(btn_frame, text="Transfer", font=self.FONT, command=self.transfer_money).grid(row=0, column=2, padx=10)
-        ttk.Button(btn_frame, text="Transaction History", font=self.FONT, command=self.view_transactions).grid(row=0, column=3, padx=10)
-        ttk.Button(btn_frame, text="Disconnect", font=self.FONT, command=self.show_login).grid(row=0, column=4, padx=10)
+        ttk.Button(btn_frame, text="Deposit", command=self.deposit_money).grid(row=0, column=0, padx=10)
+        ttk.Button(btn_frame, text="Withdraw", command=self.withdraw_money).grid(row=0, column=1, padx=10)
+        ttk.Button(btn_frame, text="Transfer", command=self.transfer_money).grid(row=0, column=2, padx=10)
+        ttk.Button(btn_frame, text="Transaction History", command=self.view_transactions).grid(row=0, column=3, padx=10)
+        ttk.Button(btn_frame, text="Disconnect", command=self.show_login).grid(row=0, column=4, padx=10)
         
-        self.balance_label = ttk.Label(self.root, text="Balance: 0.00€", font=self.SECOND_TITLE_FONT)
+        self.balance_label = ttk.Label(self.root, text="Balance: 0.00€", font=("Arial", 16))
         self.balance_label.pack(pady=10)
         
         self.update_balance()
