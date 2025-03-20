@@ -54,7 +54,7 @@ class RegisterView:
         ttk.Label(self.frame, text="Password need to have\n"
                                    "- One uppercase letter\n- One lowercase letter\n"
                                    "- One number\n- One special caracter\n"
-                                   "- Minimum 10 caracters", justify="left", font=FONT).grid(column=0, row=6, columnspan=2, pady=5)
+                                   "- Minimum 5 caracters", justify="left", font=FONT).grid(column=0, row=6, columnspan=2, pady=5)
 
         # Boutons
         btn_frame = ttk.Frame(self.frame)
