@@ -50,3 +50,9 @@ if __name__ == "__main__":
 
 # test@yahoo.fr
 # !!Testokok123
+
+# bonjour@gmail
+# AZK11!!okok
+
+# ok@gmail.com
+# aj/lL12300
