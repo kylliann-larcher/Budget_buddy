@@ -12,15 +12,17 @@ class DashboardView:
         self.database = Database()
         self.create_widgets()
 
+        self.sort_order = {
+            "amount": True,  # True  = ASC, False = DESC
+            "date_transaction": True,
+            "type_transaction": True
+        }
+
         # Style
         style = ttk.Style()
-        # Configure style for TFrame
         style.configure("TFrame", background=BACKGROUND)
-        # Configure style for TLabel (text)
         style.configure("TLabel", background=BACKGROUND, foreground="white", font=("Arial", 16))
-        # Configure style for TButton (buttons)
         style.configure("TButton", background=BACKGROUND, foreground='black', font=("Arial", 14))
-        # Configure style for Treeview (transaction history)
         style.configure("TTreeview", background=BACKGROUND, foreground="white")
         style.configure("TTreeview.Heading", background=BACKGROUND, foreground="white")
 
@@ -35,6 +37,7 @@ class DashboardView:
         ttk.Button(btn_frame, text="Withdraw", command=self.withdraw_money).grid(row=0, column=1, padx=10)
         ttk.Button(btn_frame, text="Transfer", command=self.transfer_money).grid(row=0, column=2, padx=10)
         ttk.Button(btn_frame, text="Transaction History", command=self.view_transactions).grid(row=0, column=3, padx=10)
+        ttk.Button(btn_frame, text="Graphic").grid(row=0, column=4, padx=10)
         ttk.Button(btn_frame, text="Disconnect", command=self.show_login).grid(row=0, column=5, padx=10)
         
         # Display balance
@@ -100,12 +103,17 @@ class DashboardView:
         tree.pack(padx=10, pady=10)
 
     def sort_transactions(self, tree, transactions, sort_by):
+
+        current_order = self.sort_order[sort_by]
+        reverse_order = not current_order
+        self.sort_order[sort_by] = reverse_order
+
         if sort_by == "amount":
-            transactions.sort(key=lambda t: t["amount"], reverse=True)
+            transactions.sort(key=lambda t: t["amount"], reverse=reverse_order)
         elif sort_by == "date_transaction":
-            transactions.sort(key=lambda t: t["date_transaction"], reverse=True)
+            transactions.sort(key=lambda t: t["date_transaction"], reverse=reverse_order)
         elif sort_by == "type_transaction":
-            transactions.sort(key=lambda t: t["type_transaction"], reverse=True)
+            transactions.sort(key=lambda t: t["type_transaction"], reverse=reverse_order)
         
         for item in tree.get_children():
             tree.delete(item)
