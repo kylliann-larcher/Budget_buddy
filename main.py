@@ -40,7 +40,13 @@ if __name__ == "__main__":
     app = MainApp(root)
     root.mainloop()
 
+
+
 # robuxbernard@gmail.com
 # @admin123!!A
+
 # axel@gmail.com
 # Axel123!!!
+
+# test@yahoo.fr
+# !!Testokok123

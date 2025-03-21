@@ -29,6 +29,7 @@ class DashboardView:
     def create_widgets(self):
         # Display welcome text
         ttk.Label(self.root, text="Welcome to your dashboard", font=('Arial', 36)).pack(pady=25)
+        
         btn_frame = ttk.Frame(self.root)
         btn_frame.pack(pady=30)
         
@@ -39,6 +40,9 @@ class DashboardView:
         ttk.Button(btn_frame, text="Transaction History", command=self.view_transactions).grid(row=0, column=3, padx=10)
         ttk.Button(btn_frame, text="Graphic").grid(row=0, column=4, padx=10)
         ttk.Button(btn_frame, text="Disconnect", command=self.show_login).grid(row=0, column=5, padx=10)
+
+        # ID account of the user
+        ttk.Label(self.root, text=f"ID : {self.user_id}", font=('Arial', 28)).pack(pady=25)
         
         # Display balance
         self.balance_label = ttk.Label(self.root, text="Balance: 0.00€", font=("Arial", 28))
