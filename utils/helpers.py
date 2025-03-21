@@ -1,4 +1,4 @@
-# Secure password convert in bytes
+
 """import hashlib
 
 

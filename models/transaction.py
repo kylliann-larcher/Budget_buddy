@@ -1,4 +1,4 @@
-# Transactions File
+
 from database import Database
 from datetime import datetime
 
@@ -11,7 +11,6 @@ class Transaction:
         self.id_category = id_category
         self.date_transaction = datetime.now()
 
-    # Saver every operations
     def save(self):
         db = Database()
         db.execute("""

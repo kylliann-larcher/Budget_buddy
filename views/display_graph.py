@@ -16,14 +16,11 @@ class Graphic:
             print("No transactions found.")
             return
 
-        # Extraction des dates et montants
         dates = [t["date_transaction"] for t in transactions]
         amounts = [t["amount"] for t in transactions]
 
-        # Conversion des dates en format datetime
         dates = [datetime.datetime.strptime(str(d), "%Y-%m-%d %H:%M:%S") for d in dates]
 
-        # Création du graphique
         plt.figure(figsize=(10, 5))
         plt.plot(dates, amounts, marker='o', linestyle='-', label="Transactions")
         plt.xlabel("Transactions Date")

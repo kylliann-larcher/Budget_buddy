@@ -1,4 +1,4 @@
-# Register Interface
+
 from config import *
 import tkinter as tk
 from tkinter import ttk, messagebox
@@ -12,14 +12,12 @@ class RegisterView:
         self.root.geometry(WINDOW_SIZE)
         self.root.configure(bg=BACKGROUND)
         
-        # Style
         style = ttk.Style()
         style.configure("TFrame", background=BACKGROUND)
         style.configure("TLabel", background=BACKGROUND, foreground="white")
         style.configure("TButton", foreground="black")
         style.map("TButton", background=[("active", BACKGROUND), ("!active", BACKGROUND)])
         
-        # Center columns
         self.root.columnconfigure(0, weight=1)
         self.root.columnconfigure(1, weight=1)
         self.root.columnconfigure(2, weight=1)
@@ -27,7 +25,6 @@ class RegisterView:
         self.root.rowconfigure(1, weight=1)
         self.root.rowconfigure(2, weight=1)
         
-        # Title principal
         title_frame = ttk.Frame(root, style="TFrame")
         title_frame.grid(row=0, column=0, columnspan=3, pady=20)
 
@@ -37,7 +34,6 @@ class RegisterView:
         title = ttk.Label(title_frame, text="SOLANA BANK", font=('Arial', 30, 'bold'), style="TLabel")
         title.pack()
         
-        # Content
         frame = ttk.Frame(root, style="TFrame")
         frame.grid(row=1, column=1, padx=20, pady=20)
         
@@ -65,7 +61,6 @@ class RegisterView:
         
         ttk.Label(frame, text="Password requirements:\n- One uppercase letter\n- One lowercase letter\n- One number\n- One special character\n- Minimum 10 characters", justify="left", style="TLabel").grid(column=0, row=6, columnspan=2, pady=5)
         
-        # Buttons
         self.register_button = ttk.Button(frame, text="Register", command=self.register, style="TButton")
         self.register_button.grid(column=1, row=7, pady=10)
         

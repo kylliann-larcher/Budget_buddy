@@ -1,4 +1,4 @@
-# Users Creation file
+
 from database import Database
 
 class Compte:
@@ -6,7 +6,6 @@ class Compte:
         self.id_users = id_users
         self.sold = sold
 
-    # Insert new user
     def create_user(self):
         db = Database()
         db.execute("""

@@ -16,12 +16,11 @@ class DashboardView:
         self.create_widgets()
 
         self.sort_order = {
-            "amount": True,  # True  = ASC, False = DESC
+            "amount": True, 
             "date_transaction": True,
             "type_transaction": True
         }
 
-        # Style
         style = ttk.Style()
         style.configure("TFrame", background=BACKGROUND)
         style.configure("TLabel", background=BACKGROUND, foreground="white", font=("Arial", 16))
@@ -30,13 +29,11 @@ class DashboardView:
         style.configure("TTreeview.Heading", background=BACKGROUND, foreground="white")
 
     def create_widgets(self):
-        # Display welcome text
         ttk.Label(self.root, text="Welcome to your dashboard", font=('Arial', 36)).pack(pady=25)
         
         btn_frame = ttk.Frame(self.root)
         btn_frame.pack(pady=30)
-        
-        # Create buttons
+
         ttk.Button(btn_frame, text="Deposit", command=self.deposit_money).grid(row=0, column=0, padx=10)
         ttk.Button(btn_frame, text="Withdraw", command=self.withdraw_money).grid(row=0, column=1, padx=10)
         ttk.Button(btn_frame, text="Transfer", command=self.transfer_money).grid(row=0, column=2, padx=10)
@@ -44,10 +41,8 @@ class DashboardView:
         ttk.Button(btn_frame, text="Graphic", command=self.graphic.plot_transactions).grid(row=0, column=4, padx=10)
         ttk.Button(btn_frame, text="Disconnect", command=self.show_login).grid(row=0, column=5, padx=10)
 
-        # ID account of the user
         ttk.Label(self.root, text=f"ID : {self.user_id}", font=('Arial', 28)).pack(pady=25)
-        
-        # Display balance
+
         self.balance_label = ttk.Label(self.root, text="Balance: 0.00€", font=("Arial", 28))
         self.balance_label.pack(pady=35)
         self.update_balance()

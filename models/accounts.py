@@ -1,4 +1,4 @@
-# Verification password user
+
 import hashlib
 import re
 from database import Database
@@ -14,6 +14,6 @@ class Utilisateur:
     def hasher_password(password):
         return hashlib.sha256(password.encode()).hexdigest()"""
 
-    @staticmethod   # To organise functions in class without access instances (without self.password)
+    @staticmethod 
     def verif_password(password):
         return bool(re.match(r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*\W).{10,}$', password))
