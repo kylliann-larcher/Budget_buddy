@@ -52,14 +52,18 @@ class Database:
             return 0.0
 
     # Modify in db deposit
-    def deposit(self, user_id, amount):
+    def deposit(self, user_id, amount, description, reference):
         try:
             self.execute("UPDATE accounts SET amount = amount + %s WHERE id_users = %s", (amount, user_id))
             self.commit()
 
             account_id = self.get_account_id(user_id)
             if account_id:
-                self.execute("INSERT INTO transactions (id_account, type_transaction, amount, date_transaction) VALUES (%s, 'deposit', %s, NOW())", (user_id, amount))
+                self.execute(
+                    "INSERT INTO transactions (id_account, type_transaction, amount, description, reference, date_transaction) "
+                    "VALUES (%s, 'deposit', %s, %s, %s, NOW())",
+                    (user_id, amount, description, reference)
+                )
                 self.commit()
                 return True
         except mysql.connector.Error as err:
@@ -67,7 +71,7 @@ class Database:
             return False
 
     # Modify in db withdraw
-    def withdraw(self, user_id, amount):
+    def withdraw(self, user_id, amount, description, reference):
         try:
             cursor = self.execute("SELECT amount FROM accounts WHERE id_users = %s", (user_id,))
             result = cursor.fetchone()
@@ -77,7 +81,11 @@ class Database:
 
                 account_id = self.get_account_id(user_id)
                 if account_id:
-                    self.execute("INSERT INTO transactions (id_account, type_transaction, amount, date_transaction) VALUES (%s, 'withdraw', %s, NOW())", (user_id, amount))
+                    self.execute(
+                        "INSERT INTO transactions (id_account, type_transaction, amount, description, reference, date_transaction) "
+                        "VALUES (%s, 'withdraw', %s, %s, %s, NOW())",
+                        (user_id, amount, description, reference)
+                    )
                     self.commit()
                     return True
             else:
@@ -87,8 +95,9 @@ class Database:
             print(f"Erreur SQL: {err}")
             return False
 
+
     # Modify in db transfer
-    def transfer(self, user_id, recipient_id, amount):
+    def transfer(self, user_id, recipient_id, description, amount, reference):
         try:
             cursor = self.execute("SELECT amount FROM accounts WHERE id_users = %s", (user_id,))
             result = cursor.fetchone()
@@ -99,13 +108,18 @@ class Database:
 
                 account_id = self.get_account_id(user_id)
                 if account_id:
-                    self.execute("INSERT INTO transactions (id_account, type_transaction, amount, date_transaction) VALUES (%s, 'transfer', %s, NOW())", (user_id, amount))
+                    self.execute(
+                        "INSERT INTO transactions (id_account, type_transaction, amount, description, reference, date_transaction) "
+                        "VALUES (%s, 'transfer', %s, %s, %s, NOW())",
+                        (user_id, amount, description, reference)
+                    )
                     self.commit()
                     return True
             return False
         except mysql.connector.Error as err:
             print(f"Erreur SQL: {err}")
             return False
+
 
     # Get user in 'accounts' table
     def get_account_id(self, user_id):

@@ -5,7 +5,7 @@ def verif_email(email):
     return re.match(r"[^@]+@[^@]+\.[^@]+", email)
 
 def verif_password(password):
-    if len(password) < 5 or \
+    if len(password) < 10 or \
         not re.search(r"[A-Za-z]", password) or \
         not re.search(r"\d", password) or \
         not re.search(r"[!@#$%^&*(),.?\":{}|<>]", password):
