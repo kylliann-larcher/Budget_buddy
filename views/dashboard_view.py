@@ -3,6 +3,7 @@ from config import *
 import tkinter as tk
 from tkinter import ttk, messagebox, simpledialog
 from database import Database
+from views.display_graph import Graphic
 
 class DashboardView:
     def __init__(self, root, show_login, user_id):
@@ -10,6 +11,8 @@ class DashboardView:
         self.show_login = show_login
         self.user_id = user_id
         self.database = Database()
+        self.graphic = Graphic(self.user_id)
+
         self.create_widgets()
 
         self.sort_order = {
@@ -38,7 +41,7 @@ class DashboardView:
         ttk.Button(btn_frame, text="Withdraw", command=self.withdraw_money).grid(row=0, column=1, padx=10)
         ttk.Button(btn_frame, text="Transfer", command=self.transfer_money).grid(row=0, column=2, padx=10)
         ttk.Button(btn_frame, text="Transaction History", command=self.view_transactions).grid(row=0, column=3, padx=10)
-        ttk.Button(btn_frame, text="Graphic").grid(row=0, column=4, padx=10)
+        ttk.Button(btn_frame, text="Graphic", command=self.graphic.plot_transactions).grid(row=0, column=4, padx=10)
         ttk.Button(btn_frame, text="Disconnect", command=self.show_login).grid(row=0, column=5, padx=10)
 
         # ID account of the user
