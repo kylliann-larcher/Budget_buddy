@@ -7,7 +7,7 @@ class Database:
         self.conn = mysql.connector.connect(
             host="localhost",
             user="root",
-            password="@testsql",
+            password="Kylliann2110",
             database="budget_buddy_finance"
         )
         self.cursor = self.conn.cursor(dictionary=True)
@@ -124,3 +124,5 @@ class Database:
         except mysql.connector.Error as err:
             print(f"Erreur SQL: {err}")
             return []
+
+    
