@@ -24,3 +24,18 @@ CREATE TABLE categories (
     name        VARCHAR(100) NOT NULL,
     description VARCHAR(255) DEFAULT NULL
 );
+
+CREATE TABLE transactions (
+    id_transaction         INT AUTO_INCREMENT PRIMARY KEY,
+    reference              VARCHAR(50) DEFAULT NULL,
+    description            VARCHAR(255) DEFAULT NULL,
+    amount                 DECIMAL(15,2) NOT NULL,
+    date_transaction       DATETIME DEFAULT CURRENT_TIMESTAMP,
+    type_transaction       VARCHAR(10) DEFAULT NULL,
+    id_account             INT NOT NULL,
+    id_account_destination INT DEFAULT NULL,
+    id_category            INT DEFAULT NULL,
+    FOREIGN KEY (id_account) REFERENCES accounts(id_account),
+    FOREIGN KEY (id_account_destination) REFERENCES accounts(id_account),
+    FOREIGN KEY (id_category) REFERENCES categories(id_category)
+);
